@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import {MainPage} from './pages/MainPage';
-import {QrMainPage} from './pages/qrcode/QrMainPage';
+import { MainPage } from './pages/MainPage';
+import { QrMainPage } from './pages/qrcode/QrMainPage';
 
 export const useRoutes = () => {
-    return(
+    return (
         <Switch>
             <Route path={'/'} exact>
                 <MainPage/>
@@ -13,7 +13,7 @@ export const useRoutes = () => {
                 <QrMainPage/>
             </Route>
 
-            <Redirect to={"/create"} />
+            <Redirect to={'/create'}/>
         </Switch>
     );
 }

@@ -1,25 +1,25 @@
-import {useState, useCallback} from 'react';
+import { useState, useCallback } from 'react';
 
 export const useHttp = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [ loading, setLoading ] = useState(false);
+    const [ error, setError ] = useState(null);
     const apiServer = process.env.REACT_APP_API_SERVER;
 
 
     const request = useCallback(async (url, method = 'GET', body = null, headers = {}) => {
         setLoading(true);
         try {
-            if(body) {
+            if (body) {
                 body = JSON.stringify(body);
                 headers['Content-Type'] = 'application/json';
             }
-            const response = await fetch(apiServer+url, {
+            const response = await fetch(apiServer + url, {
                 method, body, headers
             });
 
             const data = await response.json();
 
-            if(!response.ok) {
+            if (!response.ok) {
                 throw new Error(data.message || 'Что-то пошло не так');
             }
 
@@ -35,5 +35,5 @@ export const useHttp = () => {
 
     const clearError = useCallback(() => setError(null), []);
 
-    return {loading, request, error, clearError};
+    return { loading, request, error, clearError };
 }
