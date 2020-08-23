@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components'
 import { Loader } from '../../components/Loader';
 import qrDefault from '../../media/qrDefault.png';
-import {useHttp} from "../../hooks/http.hook";
+import { useHttp } from '../../hooks/http.hook';
 
 const QrContainer = styled.div`
     max-width: 800px;
@@ -58,18 +58,19 @@ const QrInput = styled.input`
 `;
 
 export const QrMainPage = () => {
-    const {loading, request} = useHttp();
-    const [qrImage, setQrImage] = useState(qrDefault);
+    const { loading, request } = useHttp();
+    const [ qrImage, setQrImage ] = useState(qrDefault);
 
     const fetchQrImage = async (text) => {
         try {
             const fetched = await request(`/dev/qr/getcode/`, 'POST', { text });
             setQrImage(fetched.link);
-        } catch (e) {}
+        } catch (e) {
+        }
     }
 
 
-    return(
+    return (
         <QrContainer>
             <QrContent>
                 <QrInput onChange={(e) => fetchQrImage(e.target.value)}/>
