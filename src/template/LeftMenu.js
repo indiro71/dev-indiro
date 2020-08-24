@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CropFree, Link as ShortLink, DeveloperMode } from '@material-ui/icons';
 
-function NavLeft() {
+function LeftMenu() {
     return (
         <ul id="sidenav-left" className="sidenav sidenav-fixed">
             <li><a href="/" className="logo-container">Admin<i
@@ -23,4 +23,4 @@ function NavLeft() {
     );
 }
 
-export default NavLeft;
+export default LeftMenu;

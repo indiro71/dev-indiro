@@ -1,18 +1,14 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom';
+import Layout from '@indiro/layout';
 import { useRoutes } from './routes';
-import Layout from './template/Layout'
-
+import LeftMenu  from './template/LeftMenu';
 
 function App() {
     const routes = useRoutes();
     return (
         <Router>
-            <Layout>
-                <div className="App">
-                    {routes}
-                </div>
-            </Layout>
+            <Layout content={routes} leftMenu={LeftMenu}/>
         </Router>
     );
 }
