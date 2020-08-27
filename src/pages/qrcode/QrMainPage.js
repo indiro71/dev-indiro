@@ -1,51 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
-import { Loader } from '../../components/Loader';
 import qrDefault from '../../media/qrDefault.png';
 import { useHttp } from '../../hooks/http.hook';
-
-const QrContainer = styled.div`
-    max-width: 800px;
-    min-height: 300px;
-    margin: auto;
-    border: 2px solid #797D80;
-    border-radius: 15px;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-`;
-
-const QrContent = styled.div`
-    width: 60%;
-    height: 100%;
-    padding: 30px;
-`;
+import { Grid, Paper, LinearProgress, Typography } from '@material-ui/core';
+import { CompactPicker } from 'react-color'
 
 const QrResult = styled.div`
-    width: 40%;
-    height: 100%;
-    padding: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-`;
-
-const QrSeparator = styled.div`
-    height: 100%;
-    position: relative;
-`;
-
-const QrLoader = styled.div`
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #797D80;
-    margin-top: -20px;
-    box-sizing: border-box;
-    margin-left: -20px;
 `;
 
 const QrInput = styled.input`
@@ -60,29 +23,63 @@ const QrInput = styled.input`
 export const QrMainPage = () => {
     const { loading, request } = useHttp();
     const [ qrImage, setQrImage ] = useState(qrDefault);
+    const [ firstColor, setFirstColor ] = useState('#000');
+    const [ secondColor, setSecondColor ] = useState('#fff');
+    const [ text, setText ] = useState('');
+    const [ timer, setTimer ] = useState(0);
 
-    const fetchQrImage = async (text) => {
-        try {
-            const fetched = await request(`/dev/qr/getcode/`, 'POST', { text });
-            setQrImage(fetched.link);
-        } catch (e) {
-        }
+
+    const fetchQrImage = () => {
+        if (!text) return null;
+        clearTimeout(timer);
+        const fetchTimer = setTimeout(async () => {
+            try {
+                const fetched = await request(`/dev/qr/getcode/`, 'POST', { text, firstColor, secondColor });
+                setQrImage(fetched.link);
+            } catch (e) {}
+        },1000);
+        setTimer(fetchTimer);
     }
 
+    useEffect(() => {
+        document.querySelector('.qr-input').focus();
+    }, []);
+
+    useEffect(() => {
+        fetchQrImage();
+    }, [text, firstColor, secondColor]);
 
     return (
-        <QrContainer>
-            <QrContent>
-                <QrInput onChange={(e) => fetchQrImage(e.target.value)}/>
-            </QrContent>
-            <QrSeparator>
-                <QrLoader>
-                    {loading ? <Loader/> : 'ok'}
-                </QrLoader>
-            </QrSeparator>
-            <QrResult>
-                <img src={qrImage} alt=""/>
-            </QrResult>
-        </QrContainer>
+        <Paper>
+            <LinearProgress style={{ opacity: loading ? 1 : 0 }} />
+            <Grid container spacing={0} alignItems="center" justify="space-between" style={{ padding: 20 }}>
+                <Grid item xl={6} md={6} xs={12}>
+                    <QrInput className={"qr-input"} onChange={(e) => setText(e.target.value)}/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <Grid container spacing={0} alignItems="center" justify="space-between">
+                        <div>
+                            <Typography variant="subtitle1" gutterBottom >
+                                First color
+                            </Typography>
+                            <CompactPicker color={ firstColor } onChange={ (color) => setFirstColor(color) } />
+                        </div>
+                        <div>
+                            <Typography variant="subtitle1" gutterBottom >
+                                Second color
+                            </Typography>
+                            <CompactPicker  color={ secondColor } onChange={ (color) => setSecondColor(color) } />
+                        </div>
+                    </Grid>
+                    <br/><br/>
+                </Grid>
+                <Grid item xl={6} md={6} xs={12}>
+                    <QrResult>
+                        <img src={qrImage} alt=""/>
+                    </QrResult>
+                </Grid>
+            </Grid>
+        </Paper>
     );
 }
