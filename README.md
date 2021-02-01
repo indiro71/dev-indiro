@@ -1,1 +1,1 @@
-# moved to [bitbucket](https://bitbucket.org/indiro/dev-indiro/)
+# develop resources [dev.indiro.ru](http://dev.iidiro.ru/)
