@@ -1,24 +1,87 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CropFree, Link as ShortLink, DeveloperMode } from '@material-ui/icons';
+import React, { useContext, useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 function LeftMenu() {
+    const [ filterMenu, setFilterMenu ] = useState([]);
+    const auth = useContext(AuthContext);
+    const menu = [
+        {
+            title: 'Main',
+            link: '/'
+        },
+        {
+            title: 'Qr-code generator',
+            link: '/qr'
+        },
+        {
+            title: 'Short links',
+            link: '/links'
+        },
+        {
+            title: 'Add link',
+            link: '/links/add',
+            auth: true
+        },
+        {
+            title: 'Notes',
+            link: '/notes'
+        },
+        {
+            title: 'Add note',
+            link: '/notes/add',
+            auth: true
+        },
+        {
+            title: 'Instagram',
+            link: '/instagram'
+        },
+        {
+            title: 'Add InstaProfile',
+            link: '/instagram/add',
+            auth: true
+        },
+        {
+            title: 'Slack',
+            link: '/slack'
+        },
+        {
+            title: 'Auth',
+            link: 'Auth',
+            auth: false
+        },
+        {
+            title: 'Logout',
+            auth: true,
+            onclick: () => {auth.logout();}
+        }
+    ];
+
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            setFilterMenu(menu.filter(item => item.auth !== false));
+        } else {
+            setFilterMenu(menu.filter(item => item.auth !== true));
+        }
+    }, [ auth.isAuthenticated ]);
+
     return (
-        <ul id="sidenav-left" className="sidenav sidenav-fixed">
-            <li><a href="/" className="logo-container">Admin<i
-                className="material-icons left"><DeveloperMode/></i></a></li>
-            <li className="no-padding">
-                <ul className="collapsible collapsible-accordion">
-                    <li className="bold waves-effect">
-                        <Link className={'collapsible-header'} to={'/qr'}>QR-code generator<i
-                            className={'chevron'}><CropFree/></i></Link>
-                    </li>
-                    <li className="bold waves-effect">
-                        <Link className={'collapsible-header'} to={'/links'}>Short links<i
-                            className={'chevron'}><ShortLink/></i></Link>
-                    </li>
-                </ul>
-            </li>
+        <ul id="slide-out" className="sidenav sidenav-fixed">
+            {filterMenu.map(item => {
+                if (item.link) {
+                    return (
+                        <li>
+                            <NavLink className={'bold waves-effect'} to={item.link}>{item.title}</NavLink>
+                        </li>
+                    );
+                } else {
+                    return (
+                        <li>
+                            <a onClick={item.onclick}>{item.title}</a>
+                        </li>
+                    );
+                }
+            })}
         </ul>
     );
 }
