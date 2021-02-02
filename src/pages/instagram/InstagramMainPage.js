@@ -1,28 +1,26 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useHttp } from '../../hooks/http.hook';
-import { LinearProgress } from '@material-ui/core';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { LinearProgress } from '@material-ui/core';
+import { useHttp } from '../../hooks/http.hook';
 
 export const InstagramMainPage = () => {
     const { loading, request } = useHttp();
     const [accounts, setAccounts] = useState([]);
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
             const fetched = await request(`/dev/instagram/list/`, 'GET');
             setAccounts(fetched.accounts);
         } catch (e) {
-
         }
-    };
+    }, [request]);
 
     useEffect(() => {
         fetchAccounts();
-    }, []);
+    }, [fetchAccounts]);
 
     return (
         <div className="masonry row">
-
             <LinearProgress style={{ opacity: loading ? 1 : 0 }}/>
 
             {!loading && accounts.length > 0 && accounts.map(account => {
@@ -43,9 +41,8 @@ export const InstagramMainPage = () => {
             })}
 
             {!loading && accounts.length === 0 &&
-            <div>No notes</div>
+            <div>No accounts</div>
             }
         </div>
     );
-
 };

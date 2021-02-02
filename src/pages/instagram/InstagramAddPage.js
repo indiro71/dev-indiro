@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, { useCallback } from 'react';
 import { useHttp } from '../../hooks/http.hook';
 import { useForm } from 'react-hook-form';
 import { LinearProgress } from '@material-ui/core';
@@ -9,20 +9,16 @@ export const InstagramAddPage = () => {
     const { register: instaForm, handleSubmit } = useForm();
     const history = useHistory();
 
-    const addAccount = async (data) => {
+    const addAccount = useCallback(async (data) => {
         if (data.name && data.password) {
             try {
-                try {
-                    const fetched = await request(`/dev/instagram/add/`, 'POST', data);
-                    history.push(`/instagram/${data.name}`);
-                } catch (e) {
-                    history.push('/instagram');
-                }
+                await request(`/dev/instagram/add/`, 'POST', data);
+                history.push(`/instagram/${data.name}`);
             } catch (e) {
                 history.push('/instagram');
             }
         }
-    };
+    }, [request]);
 
     return (
         <div className="row">
@@ -62,4 +58,4 @@ export const InstagramAddPage = () => {
             </div>
         </div>
     );
-}
+};
