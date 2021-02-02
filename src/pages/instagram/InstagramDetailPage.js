@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { useHttp } from '../../hooks/http.hook';
 import { useHistory, useParams } from 'react-router-dom';
@@ -12,14 +12,33 @@ export const InstagramDetailPage = () => {
     const accountName = useParams().name;
     const history = useHistory();
 
-    const fetchAccount = async () => {
+    const fetchAccount = useCallback(async () => {
         try {
-            const fetched  = await request(`/dev/instagram/account/${accountName}`, 'GET');
+            const fetched = await request(`/dev/instagram/account/${accountName}`, 'GET');
             setAccount(fetched.account);
         } catch (e) {
             history.push('/instagram');
         }
-    };
+    }, [request, accountName]);
+
+    const editAccount = useCallback(async (data) => {
+        try {
+            await request(`/dev/instagram/edit/${account._id}`, 'PUT', data);
+            await fetchAccount();
+            setEdit(false);
+        } catch (e) {
+            history.push('/instagram');
+        }
+    }, [request, account]);
+
+    const deleteAccount = useCallback(async () => {
+        try {
+            await request(`/dev/instagram/delete/${account._id}`, 'DELETE');
+            history.push('/instagram');
+        } catch (e) {
+            history.push('/instagram');
+        }
+    }, [request, account]);
 
     const toggleEdit = () => {
         setEdit(true);
@@ -30,63 +49,58 @@ export const InstagramDetailPage = () => {
             setValue('private', account.private);
             setValue('tagLikes', account.tagLikes.join(', '));
         });
-    }
-
-    const editAccount = async (data) => {
-        try {
-            try {
-                const fetched = await request(`/dev/instagram/edit/${account._id}`, 'PUT', data);
-                fetchAccount();
-                setEdit(false);
-            } catch (e) {
-                history.push('/instagram');
-            }
-        } catch (e) {
-            history.push('/instagram');
-        }
     };
 
     useEffect(() => {
         fetchAccount();
-    }, []);
+    }, [fetchAccount]);
 
-    if (loading) {
-        return <LinearProgress style={{ opacity: 1 }}/>
+    if (loading && !account) {
+        return <LinearProgress style={{ opacity: 1 }}/>;
     }
 
     return (
         <>
             <LinearProgress style={{ opacity: loading ? 1 : 0 }}/>
 
-            {!loading && account &&
+            {account &&
             <div className="col s12">
                 <div className="card darken-1">
                     <div className="card-content black-text">
                         <h2>{account.name}</h2>
+                        <p><b>Likes count:</b> {account.countLikes}</p>
                         {account.canEdit && <div>
-                            <p><b>Likes count:</b> {account.countLikes}</p>
+                            <p><b>Active</b> - {account.active ? 'yes' : 'no'}</p>
+                            <p><b>Tested</b> - {account.tested ? 'yes' : 'no'}</p>
+                            <p><b>Private</b> - {account.private ? 'yes' : 'no'}</p>
                             <p><b>Tags for likes:</b> {account.tagLikes.join(', ')}</p>
                             <br/>
-                            {!edit && <button onClick={toggleEdit}>Edit</button>}
+                            {!edit && <button onClick={toggleEdit} className="btn waves-effect waves-light" type="button" name="edit">Edit profile
+                                <i className="material-icons right"></i>
+                            </button>}
 
                             {edit && <div>
-                                <form className={'editaccount'} onSubmit={handleSubmit(editAccount)} noValidate autoComplete="off">
+                                <form className={'editaccount'} onSubmit={handleSubmit(editAccount)} noValidate
+                                      autoComplete="off">
                                     <div className="row">
                                         <div className="input-field col s6">
                                             <label htmlFor="password">Password</label>
-                                            <input name="password" id="password" ref={instaForm} type="password" className="validate"/>
+                                            <input name="password" id="password" ref={instaForm} type="password"
+                                                   className="validate"/>
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="input-field col s6">
                                             <label htmlFor="countLikes">Likes count</label>
-                                            <input name="countLikes" id="countLikes" ref={instaForm} type="text" className="validate"/>
+                                            <input name="countLikes" id="countLikes" ref={instaForm} type="text"
+                                                   className="validate"/>
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="input-field col s6">
                                             <label htmlFor="tagLikes">Tags for like</label>
-                                            <input name="tagLikes" id="tagLikes" ref={instaForm} type="text" className="validate"/>
+                                            <input name="tagLikes" id="tagLikes" ref={instaForm} type="text"
+                                                   className="validate"/>
                                         </div>
                                     </div>
                                     <div className="row">
@@ -95,8 +109,8 @@ export const InstagramDetailPage = () => {
                                                 <label htmlFor="active">Active</label><br/>
                                                 <label>
                                                     Off
-                                                    <input name="active" id="active" ref={instaForm}  type="checkbox" />
-                                                        <span className="lever"></span>On
+                                                    <input name="active" id="active" ref={instaForm} type="checkbox"/>
+                                                    <span className="lever"></span>On
                                                 </label>
                                             </div>
                                         </div>
@@ -107,8 +121,8 @@ export const InstagramDetailPage = () => {
                                                 <label htmlFor="tested">Tested</label><br/>
                                                 <label>
                                                     Off
-                                                    <input name="tested" id="tested" ref={instaForm}  type="checkbox" />
-                                                        <span className="lever"></span>On
+                                                    <input name="tested" id="tested" ref={instaForm} type="checkbox"/>
+                                                    <span className="lever"></span>On
                                                 </label>
                                             </div>
                                         </div>
@@ -119,8 +133,8 @@ export const InstagramDetailPage = () => {
                                                 <label htmlFor="private">Private</label><br/>
                                                 <label>
                                                     Off
-                                                    <input name="private" id="private" ref={instaForm}  type="checkbox" />
-                                                        <span className="lever"></span>On
+                                                    <input name="private" id="private" ref={instaForm} type="checkbox"/>
+                                                    <span className="lever"></span>On
                                                 </label>
                                             </div>
                                         </div>
@@ -129,8 +143,14 @@ export const InstagramDetailPage = () => {
                                         <i className="material-icons right"></i>
                                     </button>
                                 </form>
-                            </div>}
-                        </div>}
+                                <br/>
+                                <button onClick={deleteAccount} className="btn waves-effect waves-light" type="button" name="delete">Delete
+                                    <i className="material-icons right"></i>
+                                </button>
+                            </div>
+                            }
+                        </div>
+                        }
                     </div>
                 </div>
             </div>
