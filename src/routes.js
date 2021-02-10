@@ -13,6 +13,7 @@ import { InstagramMainPage } from './pages/instagram/InstagramMainPage';
 import { InstagramDetailPage } from './pages/instagram/InstagramDetailPage';
 import { InstagramAddPage } from './pages/instagram/InstagramAddPage';
 import { SlackMainPage } from './pages/slack/SlackMainPage';
+import { TagsMainPage } from './pages/tags/TagsMainPage';
 
 export const useRoutes = isAuthenticated => {
     if (isAuthenticated) {
@@ -56,6 +57,9 @@ export const useRoutes = isAuthenticated => {
                 </Route>
                 <Route path={'/slack'} exact>
                     <SlackMainPage/>
+                </Route>
+                <Route path={'/tags'} exact>
+                    <TagsMainPage/>
                 </Route>
 
                 <Redirect to={'/'}/>
