@@ -46,6 +46,11 @@ function LeftMenu() {
             link: '/slack'
         },
         {
+            title: 'Tags',
+            link: '/tags',
+            auth: true
+        },
+        {
             title: 'Auth',
             link: 'Auth',
             auth: false
@@ -70,13 +75,13 @@ function LeftMenu() {
             {filterMenu.map(item => {
                 if (item.link) {
                     return (
-                        <li>
+                        <li key={item.link}>
                             <NavLink className={'bold waves-effect'} to={item.link}>{item.title}</NavLink>
                         </li>
                     );
                 } else {
                     return (
-                        <li>
+                        <li key={item.link}>
                             <a onClick={item.onclick}>{item.title}</a>
                         </li>
                     );
