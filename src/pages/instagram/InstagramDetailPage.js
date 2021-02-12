@@ -3,11 +3,15 @@ import { LinearProgress } from '@material-ui/core';
 import { useHttp } from '../../hooks/http.hook';
 import { useHistory, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { InstagramAddPost } from './InstagramAddPost';
+import { InstagramPosts } from './InstagramPosts';
 
 export const InstagramDetailPage = () => {
     const { loading, request } = useHttp();
     const [account, setAccount] = useState();
     const [edit, setEdit] = useState(false);
+    const [addPost, setAddPost] = useState(false);
+
     const { register: instaForm, handleSubmit, setValue } = useForm();
     const accountName = useParams().name;
     const history = useHistory();
@@ -59,6 +63,11 @@ export const InstagramDetailPage = () => {
         return <LinearProgress style={{ opacity: 1 }}/>;
     }
 
+    const updatePost = () => {
+        setAddPost(false);
+        fetchAccount();
+    };
+
     return (
         <>
             <LinearProgress style={{ opacity: loading ? 1 : 0 }}/>
@@ -75,7 +84,9 @@ export const InstagramDetailPage = () => {
                             <p><b>Private</b> - {account.private ? 'yes' : 'no'}</p>
                             <p><b>Tags for likes:</b> {account.tagLikes.join(', ')}</p>
                             <br/>
-                            {!edit && <button onClick={toggleEdit} className="btn waves-effect waves-light" type="button" name="edit">Edit profile
+                            {!edit &&
+                            <button onClick={toggleEdit} className="btn waves-effect waves-light" type="button"
+                                    name="edit">Edit profile
                                 <i className="material-icons right"></i>
                             </button>}
 
@@ -144,11 +155,29 @@ export const InstagramDetailPage = () => {
                                     </button>
                                 </form>
                                 <br/>
-                                <button onClick={deleteAccount} className="btn waves-effect waves-light" type="button" name="delete">Delete
+                                <button onClick={deleteAccount} className="btn waves-effect waves-light" type="button"
+                                        name="delete">Delete
                                     <i className="material-icons right"></i>
                                 </button>
                             </div>
                             }
+
+                            <h3>Posts to publish</h3>
+
+                            {account.posts.length > 0 && <div>
+                                <InstagramPosts posts={account.posts} onDeletePost={updatePost}/>
+                            </div>}
+
+                            {!addPost &&
+                            <button onClick={() => setAddPost(true)} className="btn waves-effect waves-light"
+                                    type="submit" name="action">Add new post
+                                <i className="material-icons right"></i>
+                            </button>}
+
+                            {addPost && <div>
+                                <InstagramAddPost onAddPost={updatePost} profileId={account._id}/>
+                            </div>}
+
                         </div>
                         }
                     </div>
